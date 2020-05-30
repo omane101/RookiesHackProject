@@ -11,7 +11,8 @@ function longitude(json_result){
   return json_result['geometry']['location']['lng'];
 }
 function myFunction() {
-  var api_key="AIzaSyB_2BONXk3nauknsBj769cirLUJv_vAjGY"
+  //insert real API key I have to edit/remove mine.
+  var api_key=""
   var response;
   var json;
   var lat;
