@@ -1,3 +1,8 @@
+/*
+* RookieHacks MLH.io 2020
+* Covid-19 UI Page scripts.
+* By: Macarthur Inbody
+*/
 var cur_index=0;
 slideshow();
 function slideshow(){
