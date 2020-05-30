@@ -9,30 +9,29 @@ function draw_map() {
 	console.log('requested');
 	ajax.send();
 	ajax.onreadystatechange = function() {
-			if (ajax.readyState == 4 && ajax.status == 200) {
-				try {
-					var data = JSON.parse(ajax.responseText);
-				} catch(err) {
-					console.log(err.message + " in " + ajax.responseText);
-					return;
-				}
-				on_success(data);
-			}else{
-				if(ajax.readyState == 4){
-					on_error();
-				}
-			}
-		};
-		
-   function on_error(){
-   	console.log("Something is broken.");
-   }
+            if (ajax.readyState == 4 && ajax.status == 200) {
+                //console.log('responseText:' + xmlhttp.responseText);
+                try {
+                    var data = JSON.parse(ajax.responseText);
+                } catch(err) {
+                    console.log(err.message + " in " + ajax.responseText);
+                    return;
+                }
+                on_success(data);
+            }else{
+                if(ajax.readyState == 4){
+                    on_error();
+                }
+            }
+        };
+        
    function on_success(data){
 	var info_windows={};
 	var data_values=Array.from(data.values);
 		data.values.forEach(function(value) {
 			var story = {};
 				story.title=value[2];
+				story.age=value[3];
 				story.msg=value[1];
 				story.full_address=value[7];
 				story.latitude = parseFloat(value[8]);
@@ -78,7 +77,7 @@ function create_marker(map, story, infowindow) {
   });
 
   google.maps.event.addListener(marker, 'click', function() {
-	infowindow.setContent('<div><p><h3>' + story.title + '</h3></p>'+'<p>'+story.msg+'</p>'+story.full_address+'</p></div>');
+	infowindow.setContent('<div><p><h3>' + story.title + ','+story.age+ '</h3></p>'+'<p>'+story.msg+'</p>'+story.full_address+'</p></div>');
 	infowindow.open(map, marker);
   });
   return marker;
