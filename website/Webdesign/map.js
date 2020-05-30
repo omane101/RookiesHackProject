@@ -9,21 +9,24 @@ function draw_map() {
 	console.log('requested');
 	ajax.send();
 	ajax.onreadystatechange = function() {
-            if (ajax.readyState == 4 && ajax.status == 200) {
-                try {
-                    var data = JSON.parse(ajax.responseText);
-                } catch(err) {
-                    console.log(err.message + " in " + ajax.responseText);
-                    return;
-                }
-                on_success(data);
-            }else{
-                if(ajax.readyState == 4){
-                    on_error();
-                }
-            }
-        };
-        
+			if (ajax.readyState == 4 && ajax.status == 200) {
+				try {
+					var data = JSON.parse(ajax.responseText);
+				} catch(err) {
+					console.log(err.message + " in " + ajax.responseText);
+					return;
+				}
+				on_success(data);
+			}else{
+				if(ajax.readyState == 4){
+					on_error();
+				}
+			}
+		};
+		
+   function on_error(){
+   	console.log("Something is broken.");
+   }
    function on_success(data){
 	var info_windows={};
 	var data_values=Array.from(data.values);
@@ -78,7 +81,6 @@ function create_marker(map, story, infowindow) {
 	infowindow.setContent('<div><p><h3>' + story.title + '</h3></p>'+'<p>'+story.msg+'</p>'+story.full_address+'</p></div>');
 	infowindow.open(map, marker);
   });
-  //oms.addMarker(marker)
   return marker;
 }
 
