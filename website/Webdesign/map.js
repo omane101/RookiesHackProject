@@ -1,21 +1,40 @@
 var map;
-var locations = [];
+var stories = [];
 var info_windows=[]
-function initialiseMap() {
-
-
-  $.getJSON("https://sheets.googleapis.com/v4/spreadsheets/AIzaSyDfUZGrOEecuIO-isPQyb6tL6CK3pfccX4/values/Form Responses!A2:Q?key=AIzaSyDP5oYBNSJ5lFjKJjtFQaBfYe_lD12ZA68", function(data) {
-		// data.values contains the array of rows from the spreadsheet. Each row is also an array of cell values.
-		// Modify the code below to suit the structure of your spreadsheet.
-		var info_windows={};
-		$(data.values).each(function() {
-			var location = {};
-				location.title=this[2];
-				location.msg=this[1];
-				location.full_address=this[7];
-				location.latitude = parseFloat(this[8]);
-	  			location.longitude = parseFloat(this[9]);
-	  			locations.push(location);
+var oms;
+function draw_map() {
+	let key='AIzaSyDfUZGrOEecuIO-isPQyb6tL6CK3pfccX4';
+	let ajax=new XMLHttpRequest();
+	ajax.open('GET',"https://sheets.googleapis.com/v4/spreadsheets/1kn8vIEY1vZXtMSWz40bnvopderkFqYuvWx1lDg5uhvM/values/Form%20Responses!A2:Q?key="+key);ajax.setRequestHeader("Content-Type", "application/json");
+	console.log('requested');
+	ajax.send();
+	ajax.onreadystatechange = function() {
+            if (ajax.readyState == 4 && ajax.status == 200) {
+                try {
+                    var data = JSON.parse(ajax.responseText);
+                } catch(err) {
+                    console.log(err.message + " in " + ajax.responseText);
+                    return;
+                }
+                on_success(data);
+            }else{
+                if(ajax.readyState == 4){
+                    on_error();
+                }
+            }
+        };
+        
+   function on_success(data){
+	var info_windows={};
+	var data_values=Array.from(data.values);
+		data.values.forEach(function(value) {
+			var story = {};
+				story.title=value[2];
+				story.msg=value[1];
+				story.full_address=value[7];
+				story.latitude = parseFloat(value[8]);
+	  			story.longitude = parseFloat(value[9]);
+	  			stories.push(story);
 	  			
 		});
 	//done parsing.
@@ -27,45 +46,39 @@ function initialiseMap() {
 	  };
 	  console.log('done')
 	  var map = new google.maps.Map(document.getElementById('map'), mapOptions);
-	  setLocations(map, locations);
-  });
-}
+	  set_stories(map, stories);
 
-
-function setLocations(map, locations) {
-  var bounds = new google.maps.LatLngBounds();
-  // Create nice, customised pop-up boxes, to appear when the marker is clicked on
-  var infowindow = new google.maps.InfoWindow({
+ 	}
+ }
+function set_stories(map, stories) {
+  let bounds = new google.maps.LatLngBounds();
+  let infowindow = new google.maps.InfoWindow({
 	content: ""
   });
-  for (var i = 0; i < locations.length; i++) {
-	var new_marker = createMarker(map, locations[i], infowindow);
+  for (let i = 0; i < stories.length; i++) {
+	let new_marker = create_marker(map, stories[i], infowindow);
 	bounds.extend(new_marker.position);
   }
   map.fitBounds(bounds);
 }
 
-function createMarker(map, location, infowindow) {
+function create_marker(map, story, infowindow) {
 
-  // Modify the code below to suit the structure of your spreadsheet (stored in variable 'location')
   var position = {
-	lat: parseFloat(location.latitude),
-	lng: parseFloat(location.longitude)
+	lat: parseFloat(story.latitude),
+	lng: parseFloat(story.longitude)
   };
   var marker = new google.maps.Marker({
 	position: position,
 	map: map,
-	title: location.title,
+	title: story.title,
   });
+
   google.maps.event.addListener(marker, 'click', function() {
-	infowindow.setContent('<div><p><h3>' + location.title + '</h3></p>'+'<p>'+location.msg+'</p>'+location.full_address+'</p></div>');
-	/*
-	((location.institution === undefined) ? "" : ('<p><strong>Lead institution: </strong>' + location.institution + '</p>')) +
-	((location.department === undefined) ? "" : ('<p><strong>Department: </strong>' + location.department + '</p>')) +
-	((location.funder === undefined) ? "" : ('<p><strong>Funder: </strong>' + location.funder + '</p>')) +
-	'</div>');
-	*/
+	infowindow.setContent('<div><p><h3>' + story.title + '</h3></p>'+'<p>'+story.msg+'</p>'+story.full_address+'</p></div>');
 	infowindow.open(map, marker);
   });
+  //oms.addMarker(marker)
   return marker;
 }
+
