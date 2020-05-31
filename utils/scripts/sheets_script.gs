@@ -1,3 +1,4 @@
+var columns={};
 var column_keys=[];
 function onFormSubmit(e){
 	update_all_entries();	
