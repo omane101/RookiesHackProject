@@ -1,0 +1,17 @@
+body{
+	background-color:#C0C0C0;
+}
+#statement{
+	text-align:center;
+	font-size:1.2em;
+	line-height:1.2rem;
+	font-weight:600;
+	display:block;
+}
+#map {
+	margin-left:auto;
+	margin-right:auto;
+	height: 600px;
+	width: 800px;
+	
+}
